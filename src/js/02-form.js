@@ -11,23 +11,29 @@ const savedData = localStorage.getItem(STORAGE_KEY);
 
 if (savedData) {
   try {
-    formData = JSON.parse(savedData);
+    const parsedData = JSON.parse(savedData);
 
-    form.elements.email.value = formData.email || '';
-    form.elements.message.value = formData.message || '';
+    formData = {
+      email: parsedData.email || '',
+      message: parsedData.message || '',
+    };
+
+    form.elements.email.value = formData.email;
+    form.elements.message.value = formData.message;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
   }
 }
 
 form.addEventListener('input', event => {
-  const { name, value } = event.target;
-
-  if (name !== 'email' && name !== 'message') {
+  if (event.target.name !== 'email' && event.target.name !== 'message') {
     return;
   }
 
-  formData[name] = value.trim();
+  formData = {
+    email: form.elements.email.value.trim(),
+    message: form.elements.message.value.trim(),
+  };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 });
@@ -35,22 +41,19 @@ form.addEventListener('input', event => {
 form.addEventListener('submit', event => {
   event.preventDefault();
 
-  const email = form.elements.email.value.trim();
-  const message = form.elements.message.value.trim();
+  const submittedData = {
+    email: form.elements.email.value.trim(),
+    message: form.elements.message.value.trim(),
+  };
 
-  if (!email || !message) {
+  if (!submittedData.email || !submittedData.message) {
     return;
   }
 
-  const submittedData = {
-    email,
-    message,
-  };
-
   console.log(submittedData);
 
-  form.reset();
   localStorage.removeItem(STORAGE_KEY);
+  form.reset();
 
   formData = {
     email: '',
